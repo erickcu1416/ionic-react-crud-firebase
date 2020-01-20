@@ -1,0 +1,7 @@
+{
+  "name": "curd-firebase-prueba",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
