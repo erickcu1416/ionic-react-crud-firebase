@@ -1,13 +1,12 @@
 import { IonGrid, IonRow, IonCol, IonImg, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, IonCard, IonItem, IonLabel, IonCardContent } from '@ionic/react';
 import React, { useState } from 'react';
-import { add, document } from 'ionicons/icons';
+import { add, document, create, trash } from 'ionicons/icons';
 import { useTask } from '../hooks/useTask';
 
 const Home: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
-  const { tasks } = useTask();
-
+  const { tasks, deleteTask } = useTask();
 
   return (
     <IonPage>
@@ -22,25 +21,30 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding"> 
-        <IonCard>
-          <IonItem>
-            <IonIcon slot="start" color="primary" icon={document} />
-            <IonLabel>ion-item in a card, icon left, button right</IonLabel>
-            <IonButton fill="outline" slot="end">View</IonButton>
-          </IonItem>
 
-          <IonCardContent>
-            This is content, without any paragraph or header tags,
-            within an ion-cardContent element.
-          </IonCardContent>
-
-       </IonCard>
 
        <IonGrid>
         <IonRow>
         {tasks.map((task, index) => (
-          <IonCol size="6" key={index}>
-            {task.description}
+          <IonCol size="12" key={index}>
+            <IonCard>
+              <IonItem>
+                <IonLabel>{task.title} </IonLabel>
+                <IonButtons slot="end">
+                  <IonButton onClick={() => deleteTask(task)}>
+                    <IonIcon slot="icon-only" color="danger" icon={trash} />
+                  </IonButton>
+                  <IonButton>
+                    <IonIcon slot="icon-only" color="primary" icon={create} />
+                  </IonButton>
+                </IonButtons>
+              </IonItem>
+
+              <IonCardContent>
+                {task.description}
+              </IonCardContent>
+
+            </IonCard>
           </IonCol>
         ))}
         </IonRow>

@@ -24,17 +24,33 @@ export function useTask() {
         setTasks(newTasks);
 
         set(TASK_STORAGE, JSON.stringify(newTasks.map(p => {
-            // Don't save the base64 representation of the photo data, 
-            // since it's already saved on the Filesystem
             const taskCopy = { ...p };
             return taskCopy;
         })));
 
+        return task;
+    }
+
+    const deleteTask = async (task: Task) => {
+        console.log('TASK RECIBIDA', task);
+        const tasksString = await get('tasks');
+        const tasks = (tasksString ? JSON.parse(tasksString) : []) as Task[];
+        console.log('TASKS', tasks);
+
+        let newTasks: Task[] = [];
+        tasks.forEach( x => {
+            if (x.description !== task.description && x.title !== task.title) {
+                newTasks.push(x);
+            }
+        });
+
+        set(TASK_STORAGE, JSON.stringify(newTasks));
     }
 
     return {
         tasks,
-        saveTask
+        saveTask,
+        deleteTask
     };
 }
 

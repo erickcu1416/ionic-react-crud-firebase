@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { camera, checkmark } from 'ionicons/icons';
+import { checkmark } from 'ionicons/icons';
 import { IonBackButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonInput, IonRow, 
         IonCol, IonImg, IonActionSheet, IonList, IonItem, IonLabel, IonButtons } from '@ionic/react';
 import { useTask, Task } from '../hooks/useTask';
-const TaskForm: React.FC = () => {
+import { RouteComponentProps } from 'react-router';
+
+interface TaskProps extends RouteComponentProps {}
+
+const TaskForm: React.FC<TaskProps> = ({history}) => {
 
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
@@ -17,14 +21,16 @@ const TaskForm: React.FC = () => {
     setDescription(description.detail.value)
   }
 
-  const sendTask = () => {
-    console.log('title', title);
-    console.log('description', description);
+  const sendTask = async () => {
     const task: Task = {
       title,
       description
     }
-    saveTask(task);
+
+    const resp = await saveTask(task);
+    if (resp.title) {
+      history.push('/home');
+    }
   }
 
   return (
