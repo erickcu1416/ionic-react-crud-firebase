@@ -5,56 +5,78 @@ import { useFilesystem } from '@ionic/react-hooks/filesystem';
 const TASK_STORAGE = "tasks";
 
 export function useTask() {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [ tasks, setTasks ] = useState<Task[]>([]);
     const { get, set } = useStorage();
-    const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
+    const { readFile } = useFilesystem();
+    
 
+    const loadSaved = async () => {
+        const newTasks = await getTasks();
+        setTasks(newTasks);
+        return newTasks;
+    };
+    
     useEffect(() => {
-        const loadSaved = async () => {
-            const tasksString = await get('tasks');
-            const tasks = (tasksString ? JSON.parse(tasksString) : []) as Task[];
-            setTasks(tasks);
-        };
         loadSaved();
-      }, [get, readFile]);
+    }, [get, readFile]);
+
+    const getTasks = async () => {
+        const tasksString = await get(TASK_STORAGE);
+        const tasks = (tasksString ? JSON.parse(tasksString) : []) as Task[];
+        return tasks;
+    }
+
+    const getTaskById = async (id: number) => {
+        const a = await getTasks();
+        const task = a.find(x => x.id === Number(id));
+        return task;
+    }
 
     const saveTask = async (task: Task) => {
-        console.log('EJECUTNAOD TASKS');
-        const newTasks = [task, ...tasks];
-        setTasks(newTasks);
-
+        const taskget =  await getTasks();
+        const newTasks = [task, ...taskget];
         set(TASK_STORAGE, JSON.stringify(newTasks.map(p => {
             const taskCopy = { ...p };
             return taskCopy;
         })));
 
+        setTasks(newTasks);
+        return task;
+    }
+
+    const editTask = async (task: Task) => {
+        await deleteTask(task);
+        await saveTask(task);
         return task;
     }
 
     const deleteTask = async (task: Task) => {
-        console.log('TASK RECIBIDA', task);
-        const tasksString = await get('tasks');
-        const tasks = (tasksString ? JSON.parse(tasksString) : []) as Task[];
-        console.log('TASKS', tasks);
+      
+        const taskget =  await getTasks();
 
         let newTasks: Task[] = [];
-        tasks.forEach( x => {
-            if (x.description !== task.description && x.title !== task.title) {
+        for (const x of taskget) {
+            if (x.id !== Number(task.id)) {
                 newTasks.push(x);
             }
-        });
+        }
 
+        setTasks(newTasks);
         set(TASK_STORAGE, JSON.stringify(newTasks));
+        
     }
 
     return {
         tasks,
+        getTaskById,
         saveTask,
-        deleteTask
+        deleteTask,
+        editTask
     };
 }
 
 export interface Task {
+    id: number;
     title: string;
     description: string;
 }

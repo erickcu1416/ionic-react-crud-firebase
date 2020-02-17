@@ -29,6 +29,7 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <Route path="/taskForm" component={TaskForm} exact={true}/>
+        <Route path="/taskEdit/:id" component={TaskForm} exact={true}/>
         <Route path="/home" component={Home} exact={true} />
         <Route exact path="/" render={() => <Redirect to="/home" />} />
       </IonRouterOutlet>
